@@ -1,4 +1,4 @@
-# async-dynamo [![Build Status](https://travis-ci.org/piotrga/async-dynamo.png)](https://travis-ci.org/piotrga/async-dynamo)
+# async-dynamo [![Build Status](https://img.shields.io/travis/piotrga/async-dynamo.svg)](https://travis-ci.org/piotrga/async-dynamo) [![Maven Central](http://img.shields.io/maven-central/v/com.github.piotrga/async-dynamo.svg)](http://search.maven.org/#search|ga|1|async-dynamo)
 
 async-dynamo is an asynchronous Scala client for Amazon DynamoDB. It is based on the Akka actor framework and provides an asynchronous API.
 
