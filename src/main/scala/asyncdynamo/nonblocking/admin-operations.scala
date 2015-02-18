@@ -76,26 +76,23 @@ case class IsTableActive[T](implicit dyn: DynamoObject[T]) extends DbOperation[B
 
 
   def blockUntilTrue(timeout:FiniteDuration)(implicit dynamo: ActorRef): Future[Unit] = {
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+
     val start = System.currentTimeMillis()
-    implicit val sys = ActorSystem("blockUntilTrue") //TODO: this is not very resource-efficient (Peter G. 23/10/2012)
-    implicit val exec = sys.dispatcher
     val promise = Promise[Unit]()
 
-    def schedule() {
-      sys.scheduler.scheduleOnce(100 milliseconds){
-        if (System.currentTimeMillis() - start < timeout.toMillis) {
-          this.executeOn(dynamo)(timeout).onComplete{
-            case Success(false) => schedule()
-            case Success(true)  => promise.tryComplete(Success(true))
-            case Failure(e) => promise.failure(e)
-          }
+    def schedule(): Unit = {
+      if (System.currentTimeMillis() - start < timeout.toMillis) {
+        this.executeOn(dynamo)(timeout).onComplete {
+          case Success(false) => schedule()
+          case Success(true)  => promise.success()
+          case Failure(e) => promise.failure(e)
         }
       }
     }
-
     schedule()
-
-    promise.future.andThen{case _ => sys.shutdown()}
+    promise.future
   }
 
 }
